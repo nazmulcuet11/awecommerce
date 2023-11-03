@@ -1,6 +1,6 @@
 package com.awecommerce.productservice.controller;
 
-import com.awecommerce.productservice.dto.ProductRequest;
+import com.awecommerce.productservice.dto.CreateProductRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.containers.MongoDBContainer;
@@ -35,46 +36,101 @@ public class ProductControllerTests {
 
     @Test
     void testCreateProductReturnsHttpStatusCreatedWhenValidRequestProvided() throws Exception {
-        mockMvc.perform(
-                MockMvcRequestBuilders
-                        .post("/api/product")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(makeProductRequestJSON())
-        ).andExpect(
-                MockMvcResultMatchers.status().isCreated()
-        );
+        createProduct(makeValidProductRequest())
+            .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
     @Test
     void testCreateProductReturnsValidResponseWhenValidRequestProvided() throws Exception {
+        createProduct(makeValidProductRequest())
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("id")
+                    .isString()
+            ).andExpect(
+                MockMvcResultMatchers.jsonPath("id")
+                    .isNotEmpty()
+            ).andExpect(
+                MockMvcResultMatchers.jsonPath("name")
+                    .value("product-name")
+            ).andExpect(
+                MockMvcResultMatchers.jsonPath("description")
+                    .value("product-description")
+            ).andExpect(
+                MockMvcResultMatchers.jsonPath("price")
+                    .value(100.0)
+            );
+    }
+
+    @Test
+    void testCreateProductReturnsHTTPStatusBadRequestWhenInvalidRequestProvided() throws Exception {
+        CreateProductRequest createProductRequest = makeProductRequest(
+            null,
+            null,
+            null
+        );
+
         mockMvc.perform(
-                MockMvcRequestBuilders
-                        .post("/api/product")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(makeProductRequestJSON())
+            MockMvcRequestBuilders
+                .post("/api/product")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(makeProductRequestJSON(createProductRequest))
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("id").isString()
-        ).andExpect(
-                MockMvcResultMatchers.jsonPath("id").isNotEmpty()
-        ).andExpect(
-                MockMvcResultMatchers.jsonPath("name").value("product-name")
-        ).andExpect(
-                MockMvcResultMatchers.jsonPath("description").value("product-description")
-        ).andExpect(
-                MockMvcResultMatchers.jsonPath("price").value(100.0)
+            MockMvcResultMatchers.status().isBadRequest()
         );
     }
 
-    ProductRequest makeProductRequest() {
-        return ProductRequest
-                .builder()
-                .name("product-name")
-                .description("product-description")
-                .price(100.0)
-                .build();
+    @Test
+    void testCreateProductReturnsValidResponseWhenInvalidRequestProvided() throws Exception {
+        CreateProductRequest createProductRequest = makeProductRequest(
+            null,
+            null,
+            null
+        );
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/api/product")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(makeProductRequestJSON(createProductRequest))
+        ).andExpect(
+            MockMvcResultMatchers.status().isBadRequest()
+        ).andExpect(
+            MockMvcResultMatchers.jsonPath("name").value("must not be blank")
+        ).andExpect(
+            MockMvcResultMatchers.jsonPath("price").value("must not be null")
+        );
     }
 
-    String makeProductRequestJSON() throws JsonProcessingException {
-        return objectMapper.writeValueAsString(makeProductRequest());
+    private ResultActions createProduct(CreateProductRequest createProductRequest) throws Exception {
+        return mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/api/product")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(makeProductRequestJSON(createProductRequest))
+        );
+    }
+
+    private CreateProductRequest makeProductRequest(
+        String name,
+        String description,
+        Double price
+    ) {
+        return CreateProductRequest
+            .builder()
+            .name(name)
+            .description(description)
+            .price(price)
+            .build();
+    }
+
+    private CreateProductRequest makeValidProductRequest() {
+        return makeProductRequest(
+            "product-name",
+            "product-description",
+            100.0
+        );
+    }
+
+    private String makeProductRequestJSON(CreateProductRequest createProductRequest) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(createProductRequest);
     }
 }

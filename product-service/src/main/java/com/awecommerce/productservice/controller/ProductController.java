@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/product")
-public class ProductController  {
+public class ProductController {
     @Autowired
     private ProductService productService;
     @Autowired
@@ -32,9 +32,9 @@ public class ProductController  {
     @ResponseStatus(HttpStatus.OK)
     public List<ProductDTO> getAllProducts() {
         return productService
-                .getAllProducts()
-                .stream()
-                .map(product -> modelMapper.map(this, ProductDTO.class))
-                .toList();
+            .getAllProducts()
+            .stream()
+            .map(product -> modelMapper.map(this, ProductDTO.class))
+            .toList();
     }
 }
