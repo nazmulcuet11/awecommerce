@@ -44,61 +44,61 @@ public class ProductControllerTests {
     void testCreateProductReturnsValidResponseWhenValidRequestProvided() throws Exception {
         createProduct(makeValidProductRequest())
             .andExpect(
-                MockMvcResultMatchers.jsonPath("id")
-                    .isString()
+                MockMvcResultMatchers.jsonPath("id").isString()
             ).andExpect(
-                MockMvcResultMatchers.jsonPath("id")
-                    .isNotEmpty()
+                MockMvcResultMatchers.jsonPath("id").isNotEmpty()
             ).andExpect(
-                MockMvcResultMatchers.jsonPath("name")
-                    .value("product-name")
+                MockMvcResultMatchers.jsonPath("name").value("product-name")
             ).andExpect(
-                MockMvcResultMatchers.jsonPath("description")
-                    .value("product-description")
+                MockMvcResultMatchers.jsonPath("description").value("product-description")
             ).andExpect(
-                MockMvcResultMatchers.jsonPath("price")
-                    .value(100.0)
+                MockMvcResultMatchers.jsonPath("price").value(100.0)
             );
     }
 
     @Test
     void testCreateProductReturnsHTTPStatusBadRequestWhenInvalidRequestProvided() throws Exception {
-        CreateProductRequest createProductRequest = makeProductRequest(
-            null,
-            null,
-            null
-        );
+        CreateProductRequest createProductRequest = CreateProductRequest.builder().build();
+        createProduct(createProductRequest)
+            .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
-        mockMvc.perform(
-            MockMvcRequestBuilders
-                .post("/api/product")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(makeProductRequestJSON(createProductRequest))
-        ).andExpect(
-            MockMvcResultMatchers.status().isBadRequest()
-        );
+        createProductRequest.setName("");
+        createProduct(createProductRequest)
+            .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        createProductRequest.setPrice(-10.0);
+        createProduct(createProductRequest)
+            .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
-    void testCreateProductReturnsValidResponseWhenInvalidRequestProvided() throws Exception {
-        CreateProductRequest createProductRequest = makeProductRequest(
-            null,
-            null,
-            null
-        );
-        mockMvc.perform(
-            MockMvcRequestBuilders
-                .post("/api/product")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(makeProductRequestJSON(createProductRequest))
-        ).andExpect(
-            MockMvcResultMatchers.status().isBadRequest()
-        ).andExpect(
-            MockMvcResultMatchers.jsonPath("name").value("must not be blank")
-        ).andExpect(
-            MockMvcResultMatchers.jsonPath("price").value("must not be null")
-        );
+    void testCreateProductReturnsCorrectErrorMessageWhenInvalidRequestProvided() throws Exception {
+        CreateProductRequest createProductRequest = CreateProductRequest.builder().build();
+        createProduct(createProductRequest)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("name").value("must not be blank")
+            ).andExpect(
+                MockMvcResultMatchers.jsonPath("price").value("must not be null")
+            );
+
+        createProductRequest.setName("");
+        createProduct(createProductRequest)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("name").value("must not be blank")
+            ).andExpect(
+                MockMvcResultMatchers.jsonPath("price").value("must not be null")
+            );
+
+        createProductRequest.setPrice(-10.0);
+        createProduct(createProductRequest)
+            .andExpect(
+                MockMvcResultMatchers
+                    .jsonPath("price")
+                    .value("must be greater than or equal to 0")
+            );
     }
+
+    //<editor-fold description="Helpers">
 
     private ResultActions createProduct(CreateProductRequest createProductRequest) throws Exception {
         return mockMvc.perform(
@@ -133,4 +133,6 @@ public class ProductControllerTests {
     private String makeProductRequestJSON(CreateProductRequest createProductRequest) throws JsonProcessingException {
         return objectMapper.writeValueAsString(createProductRequest);
     }
+    
+    //</editor-fold>
 }
