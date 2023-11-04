@@ -8,12 +8,9 @@ import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/product")
@@ -33,9 +30,15 @@ public class ProductController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<ProductDTO> getProducts(Pageable pageable) {
+    public Page<ProductDTO> getProducts(
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String description,
+        @RequestParam(required = false) Double minPrice,
+        @RequestParam(required = false) Double maxPrice,
+        Pageable pageable
+    ) {
         return productService
-            .findAll(pageable)
+            .find(name, description, minPrice, maxPrice, pageable)
             .map(product -> modelMapper.map(product, ProductDTO.class));
     }
 }
