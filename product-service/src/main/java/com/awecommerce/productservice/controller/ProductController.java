@@ -34,7 +34,7 @@ public class ProductController {
         return productService
             .getAllProducts()
             .stream()
-            .map(product -> modelMapper.map(this, ProductDTO.class))
+            .map(product -> modelMapper.map(product, ProductDTO.class))
             .toList();
     }
 }
