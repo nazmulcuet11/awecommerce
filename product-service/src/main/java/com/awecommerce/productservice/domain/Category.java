@@ -1,28 +1,24 @@
 package com.awecommerce.productservice.domain;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
-import org.springframework.lang.NonNull;
 
-@Document(value = "product")
+@Document(value = "category")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Data
-public class Product {
+public class Category {
     @Id
     private String id;
+    @DocumentReference(lazy = true)
+    private Category parentCategory;
     @NotBlank
     private String name;
-    private String description;
-    @NotNull
-    @Min(0)
-    private Double price;
-    @DocumentReference(lazy = true)
-    private Category category;
 }
