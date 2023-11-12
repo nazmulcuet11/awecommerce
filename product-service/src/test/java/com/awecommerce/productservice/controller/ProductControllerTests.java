@@ -1,8 +1,11 @@
 package com.awecommerce.productservice.controller;
 
+import com.awecommerce.productservice.domain.Product;
 import com.awecommerce.productservice.dto.CreateProductRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,6 +20,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.util.List;
 
 @SpringBootTest
 @Testcontainers
@@ -52,7 +57,10 @@ public class ProductControllerTests {
             ).andExpect(
                 MockMvcResultMatchers.jsonPath("description").value("product-description")
             ).andExpect(
-                MockMvcResultMatchers.jsonPath("price").value(100.0)
+                MockMvcResultMatchers.jsonPath("variants").isNotEmpty()
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("variants[0].price").value(100.0)
             );
     }
 
@@ -66,7 +74,11 @@ public class ProductControllerTests {
         createProduct(createProductRequest)
             .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
-        createProductRequest.setPrice(-10.0);
+        var variant = CreateProductRequest.Variant
+            .builder()
+            .price(-10.0)
+            .build();
+        createProductRequest.setVariants(List.of(variant));
         createProduct(createProductRequest)
             .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
@@ -78,7 +90,7 @@ public class ProductControllerTests {
             .andExpect(
                 MockMvcResultMatchers.jsonPath("name").value("must not be blank")
             ).andExpect(
-                MockMvcResultMatchers.jsonPath("price").value("must not be null")
+                MockMvcResultMatchers.jsonPath("variants").value("must not be empty")
             );
 
         createProductRequest.setName("");
@@ -86,15 +98,7 @@ public class ProductControllerTests {
             .andExpect(
                 MockMvcResultMatchers.jsonPath("name").value("must not be blank")
             ).andExpect(
-                MockMvcResultMatchers.jsonPath("price").value("must not be null")
-            );
-
-        createProductRequest.setPrice(-10.0);
-        createProduct(createProductRequest)
-            .andExpect(
-                MockMvcResultMatchers
-                    .jsonPath("price")
-                    .value("must be greater than or equal to 0")
+                MockMvcResultMatchers.jsonPath("variants").value("must not be empty")
             );
     }
 
@@ -114,11 +118,15 @@ public class ProductControllerTests {
         String description,
         Double price
     ) {
+        var variant = CreateProductRequest.Variant
+            .builder()
+            .price(price)
+            .build();
         return CreateProductRequest
             .builder()
             .name(name)
             .description(description)
-            .price(price)
+            .variants(List.of(variant))
             .build();
     }
 
