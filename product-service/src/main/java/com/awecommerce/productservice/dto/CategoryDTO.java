@@ -1,6 +1,7 @@
 package com.awecommerce.productservice.dto;
 
 import com.awecommerce.productservice.domain.Category;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.DocumentReference;
 @NoArgsConstructor
 @Builder
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CategoryDTO {
     private String id;
     private String name;

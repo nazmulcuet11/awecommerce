@@ -21,9 +21,9 @@ public class ProductService {
     private MongoTemplate mongoTemplate;
 
     public Product save(Product product) {
-        Product savedProduct = mongoTemplate.insert(product);
+        mongoTemplate.insert(product);
         log.info("Product {} saved.", product);
-        return savedProduct;
+        return product;
     }
 
     public Page<Product> find(
