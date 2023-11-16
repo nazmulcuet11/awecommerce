@@ -1,11 +1,8 @@
 package com.awecommerce.productservice.controller;
 
-import com.awecommerce.productservice.domain.Product;
 import com.awecommerce.productservice.dto.CreateProductRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -113,29 +110,17 @@ public class ProductControllerTests {
         );
     }
 
-    private CreateProductRequest makeProductRequest(
-        String name,
-        String description,
-        Double price
-    ) {
+    private CreateProductRequest makeValidProductRequest() {
         var variant = CreateProductRequest.Variant
             .builder()
-            .price(price)
+            .price(100.0)
             .build();
         return CreateProductRequest
             .builder()
-            .name(name)
-            .description(description)
+            .name("product-name")
+            .description("product-description")
             .variants(List.of(variant))
             .build();
-    }
-
-    private CreateProductRequest makeValidProductRequest() {
-        return makeProductRequest(
-            "product-name",
-            "product-description",
-            100.0
-        );
     }
 
     private String makeProductRequestJSON(CreateProductRequest createProductRequest) throws JsonProcessingException {

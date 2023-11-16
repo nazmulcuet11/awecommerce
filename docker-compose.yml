@@ -10,6 +10,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password
+  
   order_service_postgres:
     image: postgres
     container_name: order_service_postgres
