@@ -7,10 +7,9 @@ services:
     restart: always
     ports:
       - "27017:27017"
-    # environment:
-      # MONGO_INITDB_DATABASE: admin
-      # MONGO_INITDB_ROOT_USERNAME: root
-      # MONGO_INITDB_ROOT_PASSWORD: password
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
   order_service_postgres:
     image: postgres
     container_name: order_service_postgres
@@ -18,5 +17,6 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_PASSWORD: example
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
   
