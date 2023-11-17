@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
@@ -26,6 +23,7 @@ public class OrderLineItem {
     @NotNull
     @Min(1)
     private Integer count;
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
