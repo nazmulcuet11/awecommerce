@@ -27,4 +27,11 @@ public class ErrorHandlingControllerAdvice {
             });
         return errors;
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public String handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ex.getMessage();
+    }
 }

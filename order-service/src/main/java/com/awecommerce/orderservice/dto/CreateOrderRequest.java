@@ -27,10 +27,7 @@ public class CreateOrderRequest {
     @Builder
     public static class LineItem {
         @NotBlank
-        private String productSku;
-        @NotNull
-        @Min(0)
-        private Double unitPrice;
+        private String sku;
         @NotNull
         @Min(1)
         private Integer count;

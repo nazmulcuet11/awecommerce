@@ -16,10 +16,7 @@ public class OrderLineItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank
-    private String productSku;
-    @NotNull
-    @Min(0)
-    private Double unitPrice;
+    private String sku;
     @NotNull
     @Min(1)
     private Integer count;

@@ -27,10 +27,7 @@ public class CreateOrderResponse {
     public static class LineItem {
         @NotNull
         private Long id;
-        private String productSku;
-        @NotNull
-        @Min(0)
-        private Double unitPrice;
+        private String sku;
         @NotNull
         @Min(1)
         private Integer count;
