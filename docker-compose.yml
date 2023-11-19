@@ -20,4 +20,14 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
+
+  inventory_service_postgres:
+    image: postgres
+    container_name: inventory_service_postgres
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
   
