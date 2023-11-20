@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -26,7 +25,7 @@ public class OrderController {
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
-    private WebClient webClient;
+    private WebClient.Builder webClientBuilder;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -44,9 +43,11 @@ public class OrderController {
             .map(CreateOrderRequest.LineItem::getSku)
             .toList();
 
-        var inventories = webClient.get()
+        var inventories = webClientBuilder
+            .build()
+            .get()
             .uri(
-                "http://localhost:8082/api/inventory",
+                "http://inventory-service/api/inventory",
                 uriBuilder -> uriBuilder.queryParam("sku", skus).build()
             )
             .retrieve()
