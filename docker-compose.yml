@@ -30,4 +30,32 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
-  
+
+  keycloak:
+    image: quay.io/keycloak/keycloak
+    command: start-dev
+    ports:
+      - "8090:8080"
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: keycloak_postgres
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: password
+      KC_DB_SCHEMA: public
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
+    depends_on:
+      keycloak_postgres:
+        condition: service_healthy
+
+  keycloak_postgres:
+    image: postgres
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: "exit 0"
