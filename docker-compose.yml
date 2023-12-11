@@ -22,6 +22,8 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
+    volumes:
+      - ./data/order_service_postgres/var/lib/postgresql/data:/var/lib/postgresql/data
 
   inventory_service_postgres:
     image: postgres:16.1
@@ -32,9 +34,12 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
+    volumes:
+      - ./data/inventory_service_postgres/var/lib/postgresql/data:/var/lib/postgresql/data
 
   keycloak:
     image: quay.io/keycloak/keycloak:23.0
+    container_name: keycloak
     command: start-dev
     ports:
       - "8090:8080"
@@ -53,11 +58,14 @@ services:
 
   keycloak_postgres:
     image: postgres:16.1
+    container_name: keycloak_postgres
     ports:
       - "5434:5432"
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
+    volumes:
+      - ./data/keycloak_postgres/var/lib/postgresql/data:/var/lib/postgresql/data
     healthcheck:
       test: "exit 0"
