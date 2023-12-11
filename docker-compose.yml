@@ -2,7 +2,7 @@ version: '1.0'
 
 services:
   product_service_mongodb:
-    image: mongo
+    image: mongo:7.0.4
     container_name: product_service_mongodb
     restart: always
     ports:
@@ -12,7 +12,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
   
   order_service_postgres:
-    image: postgres
+    image: postgres:16.1
     container_name: order_service_postgres
     restart: always
     ports:
@@ -22,7 +22,7 @@ services:
       POSTGRES_PASSWORD: password
 
   inventory_service_postgres:
-    image: postgres
+    image: postgres:16.1
     container_name: inventory_service_postgres
     restart: always
     ports:
@@ -32,7 +32,7 @@ services:
       POSTGRES_PASSWORD: password
 
   keycloak:
-    image: quay.io/keycloak/keycloak
+    image: quay.io/keycloak/keycloak:23.0
     command: start-dev
     ports:
       - "8090:8080"
@@ -50,7 +50,7 @@ services:
         condition: service_healthy
 
   keycloak_postgres:
-    image: postgres
+    image: postgres:16.1
     ports:
       - "5434:5432"
     environment:
