@@ -10,6 +10,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./data/product_service_mongodb/data/db:/data/db
   
   order_service_postgres:
     image: postgres:16.1
